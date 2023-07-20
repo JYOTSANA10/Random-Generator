@@ -13,7 +13,7 @@ async function readCSVFile() {
   const data_new = [];
 
   return new Promise((resolve, reject) => {
-    fs.createReadStream(__dirname + "/new.csv")
+    fs.createReadStream(__dirname + "/collection.csv")
       .pipe(parse({ delimiter: ",", from_line: 2 }))
       .on("data", function (row) {
         data_new.push(row);
@@ -27,14 +27,16 @@ async function readCSVFile() {
   });
 }
 
-async function randomTitle() {
-  const data = await readCSVFile();
-  // console.log("---------",data[0]);
-  const adjective = data[Math.floor(Math.random() * data.length)];
-  //  console.log("-------------",adjective);
+// async function randomTitle() {
+//   const data = await readCSVFile();
+//   console.log("---------",data.length);
+// console.log("csv---",data[0][5]);
 
-  return adjective;
-}
+// //   const adjective = data[Math.floor(Math.random() * data.length)];
+// //    console.log("-------------",adjective);
+
+// //   return adjective;
+// }
 // randomTitle();
 
 // const printAddress = async () => {
@@ -52,62 +54,55 @@ async function randomTitle() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 3;
+export const DEFAULT_PRODUCTS_COUNT = 1;
 const CREATE_PRODUCTS_MUTATION = `
-  mutation populateProduct($input: ProductInput!) {
-    productCreate(input: $input) {
-      product {
+mutation collectionCreate($input: CollectionInput!) {
+    collectionCreate(input: $input) {
+      collection {
         id
-        
-        
       }
     }
   }
 `;
 
-export default async function productCreator(
+export default async function collectionCreator(
   session,
   count = DEFAULT_PRODUCTS_COUNT
 ) {
   const client = new shopify.api.clients.Graphql({ session });
-  
+//   const a = await randomTitle();
+//   console.log("=========", a[3], "---");
+
+//   const random = Math.floor(Math.random() * (30000 - 1000) + 1000);
+//   console.log("random", random);
+  const data = await readCSVFile();
+  console.log("csv---",data[0]);
 
   try {
-    for (let i = 0; i < count; i++) {
-
-      const a = await randomTitle();
-      console.log("---------",a[3]);
-
-     const random = Math.floor(Math.random() * (30000 - 1000) + 1000);
-  
+    for (let i = 0; i < data.length; i++) {
       await client.query({
         data: {
           query: CREATE_PRODUCTS_MUTATION,
           variables: {
             input: {
-              title: `${a[3]}`,
-              descriptionHtml: `${a[7]}`,
-              images: [
+              title: `${data[i][0]}`,
+              descriptionHtml: `${data[i][1]}`,
+              ruleSet: {
+                appliedDisjunctively: true,
+                rules: [
+                  {
+                    column: `${data[i][2]}`,
+                    relation: `${data[i][3]}`,
+                    condition: `${data[i][4]}`
+                  }
+                ]
+              },
+              image: 
                 {
                   altText: "Image",
-                  src: `${a[29]}`,
+                  src: `${data[i][5]}`,
                 },
-              ],
-              tags:[`${a[27]}`],
-              variants: [
-                {
-                  price: `${a[25]}`,
-                  sku: `${random}`,
-                  // inventoryQuantities: [
-                  //   {
-                  //     availableQuantity: 1,
-                  //     locationId: "gid://shopify/Location/81699209507",
-                  //   },
-                  // ],
-                  options: ["Red"] 
-
-                },
-              ],
+              
             },
           },
         },

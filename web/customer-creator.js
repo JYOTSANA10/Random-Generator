@@ -5,6 +5,7 @@ import { parse } from "csv-parse";
 import path, { resolve } from "path";
 import { fileURLToPath } from "url";
 import { rejects } from "assert";
+// import { createHmac } 'node:crypto';
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
@@ -13,7 +14,7 @@ async function readCSVFile() {
   const data_new = [];
 
   return new Promise((resolve, reject) => {
-    fs.createReadStream(__dirname + "/new.csv")
+    fs.createReadStream(__dirname + "/customers.csv")
       .pipe(parse({ delimiter: ",", from_line: 2 }))
       .on("data", function (row) {
         data_new.push(row);
@@ -29,12 +30,17 @@ async function readCSVFile() {
 
 async function randomTitle() {
   const data = await readCSVFile();
-  // console.log("---------",data[0]);
+//   console.log("---------",data[0]);
+//    var id = createHmac.randomBytes(3).toString('hex');
+//    console.log("id---------",id);
+
+
   const adjective = data[Math.floor(Math.random() * data.length)];
-  //  console.log("-------------",adjective);
+   console.log("-------------",adjective);
 
   return adjective;
 }
+
 // randomTitle();
 
 // const printAddress = async () => {
@@ -52,62 +58,57 @@ async function randomTitle() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 3;
+export const DEFAULT_PRODUCTS_COUNT = 1;
 const CREATE_PRODUCTS_MUTATION = `
-  mutation populateProduct($input: ProductInput!) {
-    productCreate(input: $input) {
-      product {
+mutation customerCreate($input: CustomerInput!) {
+    customerCreate(input: $input) {
+      customer {
         id
-        
-        
       }
     }
   }
 `;
 
-export default async function productCreator(
+export default async function customerCreator(
   session,
   count = DEFAULT_PRODUCTS_COUNT
 ) {
   const client = new shopify.api.clients.Graphql({ session });
-  
+ 
 
   try {
     for (let i = 0; i < count; i++) {
 
-      const a = await randomTitle();
-      console.log("---------",a[3]);
+        var zip1 = Math.random().toString(36).slice(2, 5).toUpperCase();
+        var zip2 = Math.random().toString(36).slice(2, 5).toUpperCase();
 
-     const random = Math.floor(Math.random() * (30000 - 1000) + 1000);
-  
+       console.log("zip---------",zip1,zip2);
+
+        const a = await randomTitle();
+        console.log("=========", a[0]);
+
+        
       await client.query({
         data: {
           query: CREATE_PRODUCTS_MUTATION,
           variables: {
             input: {
-              title: `${a[3]}`,
-              descriptionHtml: `${a[7]}`,
-              images: [
-                {
-                  altText: "Image",
-                  src: `${a[29]}`,
-                },
-              ],
-              tags:[`${a[27]}`],
-              variants: [
-                {
-                  price: `${a[25]}`,
-                  sku: `${random}`,
-                  // inventoryQuantities: [
-                  //   {
-                  //     availableQuantity: 1,
-                  //     locationId: "gid://shopify/Location/81699209507",
-                  //   },
-                  // ],
-                  options: ["Red"] 
-
-                },
-              ],
+                firstName: `${a[0]}`,
+                lastName: `${a[1]}`,
+                phone:`${a[5]}`,
+                email: `${a[2]}`,
+                "acceptsMarketing": true,
+                "addresses": [
+                  {
+                    "address1": `${a[3]}`,
+                    "city": `${a[4]}`,
+                    "phone": `${a[5]}`, 
+                    "zip": zip1+" "+zip2,
+                    "lastName": `${a[1]}`,
+                    "firstName": `${a[0]}`,
+                    "country": `${a[7]}`
+                  }
+                ],
             },
           },
         },

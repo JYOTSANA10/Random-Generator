@@ -1,0 +1,6 @@
+Name,description,column,relation,condition,images
+Men,1,TAG,EQUALS,Men,https://media.istockphoto.com/id/1214561965/photo/young-man-in-shopping-looking-for-presents-consumerism-fashion-lifestyle-concept.jpg?s=612x612&w=0&k=20&c=G1n6f4oQ6om156yTJgdKiQ8_Mn6KqtKAHHXDY0-4f3Q=
+Women,2,TAG,EQUALS,Women,https://img.freepik.com/free-photo/beautiful-smiling-young-blonde-woman-pointing-sunglasses-holding-shopping-bags-credit-card-pink-wall_496169-1506.jpg?w=740&t=st=1689833160~exp=1689833760~hmac=0137bedfecb5eca56b595407d1fa981621f18537aefe0c248c3135473b22faaa
+Kids,3,TAG,EQUALS,kids,https://t4.ftcdn.net/jpg/01/33/96/57/360_F_133965710_qzv5mhpMxPOCwSG8QFQZVrUUVyoARDY8.jpg
+Costly,4,VARIANT_PRICE,GREATER_THAN,10,https://thumbs.dreamstime.com/b/supermarket-cart-loaded-cardboard-boxes-sales-goods-concept-trade-commerce-online-shopping-high-delivery-order-134531493.jpg
+Cheeper,5,VARIANT_PRICE,LESS_THAN,10,https://t3.ftcdn.net/jpg/02/41/43/18/360_F_241431868_8DFQpCcmpEPVG0UvopdztOAd4a6Rqsoo.jpg

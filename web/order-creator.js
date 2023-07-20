@@ -52,20 +52,36 @@ async function randomTitle() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 3;
+export const DEFAULT_PRODUCTS_COUNT = 1;
 const CREATE_PRODUCTS_MUTATION = `
-  mutation populateProduct($input: ProductInput!) {
-    productCreate(input: $input) {
-      product {
+mutation draftOrderCreate($input: DraftOrderInput!) {
+    draftOrderCreate(input: $input) {
+      draftOrder {
+       
         id
-        
+      order {
+        id
+      }
+      status
         
       }
     }
   }
 `;
+const DRAFT_ORDER_COMPLETE = `
+mutation draftOrderComplete($id: ID!) {
+    draftOrderComplete(id: $id) {
+      draftOrder {
+        id
+        order {
+          id
+        }
+      }
+    }
+  }
+  `;
 
-export default async function productCreator(
+export default async function orderCreator(
   session,
   count = DEFAULT_PRODUCTS_COUNT
 ) {
@@ -75,43 +91,66 @@ export default async function productCreator(
   try {
     for (let i = 0; i < count; i++) {
 
-      const a = await randomTitle();
-      console.log("---------",a[3]);
+    //   const a = await randomTitle();
+      console.log("---------Enter");
 
-     const random = Math.floor(Math.random() * (30000 - 1000) + 1000);
   
-      await client.query({
+      const pro_id= await client.query({
         data: {
           query: CREATE_PRODUCTS_MUTATION,
           variables: {
             input: {
-              title: `${a[3]}`,
-              descriptionHtml: `${a[7]}`,
-              images: [
+              "customerId": "gid://shopify/Customer/7223657890075",
+              "note": "Test draft order",
+              "email": "test.user@shopify.com",
+              "taxExempt": true,
+              "shippingLine": {
+                "title": "Custom Shipping",
+                "price": 4.55
+              },
+              "shippingAddress": {
+                "address1": "123 Main St",
+                "city": "Waterloo",
+                "province": "Ontario",
+                "country": "Canada",
+                "zip": "A1A 1A1"
+              },
+              "billingAddress": {
+                "address1": "456 Main St",
+                "city": "Toronto",
+                "province": "Ontario",
+                "country": "Canada",
+                "zip": "Z9Z 9Z9"
+              },
+             
+              "lineItems": [
+               
                 {
-                  altText: "Image",
-                  src: `${a[29]}`,
-                },
+                  "variantId": "gid://shopify/ProductVariant/45754251346203",
+                  "quantity": 2
+                }
               ],
-              tags:[`${a[27]}`],
-              variants: [
-                {
-                  price: `${a[25]}`,
-                  sku: `${random}`,
-                  // inventoryQuantities: [
-                  //   {
-                  //     availableQuantity: 1,
-                  //     locationId: "gid://shopify/Location/81699209507",
-                  //   },
-                  // ],
-                  options: ["Red"] 
-
-                },
-              ],
-            },
-          },
+             
+            }
+          }
+          
         },
       });
+
+      console.log("pro_id=========>",`${pro_id.body.data.draftOrderCreate.draftOrder.id}`);
+
+      const res= await client.query({
+        data: {
+          query: DRAFT_ORDER_COMPLETE,
+          variables: {
+            input: {
+                id:`${pro_id.body.data.draftOrderCreate.draftOrder.id}`
+            }
+          }
+        }
+        });
+        console.log("RES------",res.body.data);
+
     }
   } catch (error) {
     if (error instanceof GraphqlQueryError) {
