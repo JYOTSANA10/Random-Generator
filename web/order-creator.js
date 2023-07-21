@@ -52,7 +52,7 @@ async function randomTitle() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 1;
+export const DEFAULT_PRODUCTS_COUNT = 5;
 const CREATE_PRODUCTS_MUTATION = `
 mutation draftOrderCreate($input: DraftOrderInput!) {
     draftOrderCreate(input: $input) {
@@ -83,6 +83,8 @@ mutation draftOrderComplete($id: ID!) {
 
 export default async function orderCreator(
   session,
+  customer_id,
+  product_id,
   count = DEFAULT_PRODUCTS_COUNT
 ) {
   const client = new shopify.api.clients.Graphql({ session });
@@ -91,16 +93,19 @@ export default async function orderCreator(
   try {
     for (let i = 0; i < count; i++) {
 
-    //   const a = await randomTitle();
-      console.log("---------Enter");
+      // console.log("customer_id----in --",customer_id);
+      const adjective = await customer_id[Math.floor(Math.random() * customer_id.length)];
 
+      const adjective2 = await product_id[Math.floor(Math.random() * product_id.length)];
+
+      console.log("adjective----",adjective2.id);
   
       const pro_id= await client.query({
         data: {
           query: CREATE_PRODUCTS_MUTATION,
           variables: {
             input: {
-              "customerId": "gid://shopify/Customer/7223657890075",
+              "customerId": `${adjective.id}`,
               "note": "Test draft order",
               "email": "test.user@shopify.com",
               "taxExempt": true,
@@ -126,8 +131,8 @@ export default async function orderCreator(
               "lineItems": [
                
                 {
-                  "variantId": "gid://shopify/ProductVariant/45754251346203",
-                  "quantity": 2
+                  "variantId": `${adjective2.id}`,
+                  "quantity": 1
                 }
               ],
              
@@ -137,15 +142,15 @@ export default async function orderCreator(
         },
       });
 
-      console.log("pro_id=========>",`${pro_id.body.data.draftOrderCreate.draftOrder.id}`);
+      console.log("pro_id=========>",pro_id.body.data.draftOrderCreate.draftOrder.id);
 
       const res= await client.query({
         data: {
           query: DRAFT_ORDER_COMPLETE,
           variables: {
-            input: {
+           
                 id:`${pro_id.body.data.draftOrderCreate.draftOrder.id}`
-            }
+           
           }
         }
         });

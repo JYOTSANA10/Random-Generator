@@ -14,6 +14,7 @@ const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "3000",
   10
 );
+let cust_id=[];
 
 const STATIC_PATH =
   process.env.NODE_ENV === "production"
@@ -53,12 +54,15 @@ app.get("/api/products/create", async (_req, res) => {
   let error = null;
 
   try {
-    // await productCreator(res.locals.shopify.session);
+   const product_id= await productCreator(res.locals.shopify.session);
     // await collectionCreator(res.locals.shopify.session);
-    // await customerCreator(res.locals.shopify.session);
-    const data=await orderCreator(res.locals.shopify.session);
+    const customer_id=await customerCreator(res.locals.shopify.session);
+    console.log("product_id======",product_id);
+    
+  
+
+    const data=await orderCreator(res.locals.shopify.session,customer_id,product_id);
     // console.log("data-------------->",res);
-    1128883323163
   } catch (e) {
     console.log(`Failed to process products/create: ${e.message}`);
     status = 500;

@@ -52,35 +52,37 @@ async function randomTitle() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 3;
+export const DEFAULT_PRODUCTS_COUNT = 10;
 const CREATE_PRODUCTS_MUTATION = `
   mutation populateProduct($input: ProductInput!) {
     productCreate(input: $input) {
       product {
         id
-        
+        variants(first: 1) {
+          nodes {
+          id
+          }
+        }
         
       }
     }
   }
 `;
-
+let data_arr=[];
 export default async function productCreator(
   session,
   count = DEFAULT_PRODUCTS_COUNT
 ) {
   const client = new shopify.api.clients.Graphql({ session });
-  
 
   try {
     for (let i = 0; i < count; i++) {
-
       const a = await randomTitle();
-      console.log("---------",a[3]);
+      console.log("---------", a[3]);
 
-     const random = Math.floor(Math.random() * (30000 - 1000) + 1000);
-  
-      await client.query({
+      const random = Math.floor(Math.random() * (30000 - 1000) + 1000);
+
+      const res=await client.query({
         data: {
           query: CREATE_PRODUCTS_MUTATION,
           variables: {
@@ -93,10 +95,10 @@ export default async function productCreator(
                   src: `${a[29]}`,
                 },
               ],
-              tags:[`${a[27]}`],
+              tags: [`${a[27]}`],
               variants: [
                 {
-                  price: `${a[25]}`,
+                  price: `${a[25]}`||"300",
                   sku: `${random}`,
                   // inventoryQuantities: [
                   //   {
@@ -104,15 +106,18 @@ export default async function productCreator(
                   //     locationId: "gid://shopify/Location/81699209507",
                   //   },
                   // ],
-                  options: ["Red"] 
-
+                  options: ["Red"],
                 },
               ],
             },
           },
         },
       });
+      console.log("customer_id--------",res.body.data.productCreate.product.variants.nodes[0]);
+      data_arr.push(res.body.data.productCreate.product.variants.nodes[0])
     }
+    return data_arr;
+
   } catch (error) {
     if (error instanceof GraphqlQueryError) {
       throw new Error(

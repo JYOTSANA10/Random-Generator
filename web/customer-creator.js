@@ -58,7 +58,7 @@ async function randomTitle() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 1;
+export const DEFAULT_PRODUCTS_COUNT = 10;
 const CREATE_PRODUCTS_MUTATION = `
 mutation customerCreate($input: CustomerInput!) {
     customerCreate(input: $input) {
@@ -68,13 +68,13 @@ mutation customerCreate($input: CustomerInput!) {
     }
   }
 `;
-
+let data_arr=[];
 export default async function customerCreator(
   session,
   count = DEFAULT_PRODUCTS_COUNT
 ) {
   const client = new shopify.api.clients.Graphql({ session });
- 
+  
 
   try {
     for (let i = 0; i < count; i++) {
@@ -88,7 +88,7 @@ export default async function customerCreator(
         console.log("=========", a[0]);
 
         
-      await client.query({
+      const customer_id = await client.query({
         data: {
           query: CREATE_PRODUCTS_MUTATION,
           variables: {
@@ -113,7 +113,15 @@ export default async function customerCreator(
           },
         },
       });
+
+      console.log("customer_id--------",customer_id.body.data.customerCreate.customer);
+      data_arr.push(customer_id.body.data.customerCreate.customer)
     }
+    data_arr = data_arr.filter(function(item) {
+      return item !== null
+    })
+    return data_arr;
+
   } catch (error) {
     if (error instanceof GraphqlQueryError) {
       throw new Error(
