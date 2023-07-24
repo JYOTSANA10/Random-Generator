@@ -113,13 +113,7 @@ export default async function orderCreator(
                 "title": "Custom Shipping",
                 "price": 4.55
               },
-              "shippingAddress": {
-                "address1": "123 Main St",
-                "city": "Waterloo",
-                "province": "Ontario",
-                "country": "Canada",
-                "zip": "A1A 1A1"
-              },
+             
               "billingAddress": {
                 "address1": "456 Main St",
                 "city": "Toronto",
@@ -135,6 +129,7 @@ export default async function orderCreator(
                   "quantity": 1
                 }
               ],
+              
              
             }
           }

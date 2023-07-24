@@ -55,7 +55,7 @@ app.get("/api/products/create", async (_req, res) => {
 
   try {
    const product_id= await productCreator(res.locals.shopify.session);
-    // await collectionCreator(res.locals.shopify.session);
+    await collectionCreator(res.locals.shopify.session);
     const customer_id=await customerCreator(res.locals.shopify.session);
     console.log("product_id======",product_id);
     

@@ -54,7 +54,7 @@ async function readCSVFile() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 1;
+export const DEFAULT_PRODUCTS_COUNT = 5;
 const CREATE_PRODUCTS_MUTATION = `
 mutation collectionCreate($input: CollectionInput!) {
     collectionCreate(input: $input) {

@@ -52,7 +52,7 @@ async function randomTitle() {
 //  return `${adjective[3]}`;
 // }
 
-export const DEFAULT_PRODUCTS_COUNT = 10;
+export const DEFAULT_PRODUCTS_COUNT = 20;
 const CREATE_PRODUCTS_MUTATION = `
   mutation populateProduct($input: ProductInput!) {
     productCreate(input: $input) {
@@ -82,6 +82,7 @@ export default async function productCreator(
 
       const random = Math.floor(Math.random() * (30000 - 1000) + 1000);
 
+      
       const res=await client.query({
         data: {
           query: CREATE_PRODUCTS_MUTATION,
@@ -96,18 +97,48 @@ export default async function productCreator(
                 },
               ],
               tags: [`${a[27]}`],
+              "options": [
+                "Color","Size"
+              ],
+              "productCategory": {
+                "productTaxonomyNodeId": "gid://shopify/ProductTaxonomyNode/174"
+              },
               variants: [
                 {
+                  title:"Variant1",
                   price: `${a[25]}`||"300",
                   sku: `${random}`,
-                  // inventoryQuantities: [
-                  //   {
-                  //     availableQuantity: 1,
-                  //     locationId: "gid://shopify/Location/81699209507",
-                  //   },
-                  // ],
-                  options: ["Red"],
+                  "options": [
+                    "Black","X"
+                  ],
+                  "inventoryItem": {
+                    "tracked": true
+                  },
+                  inventoryQuantities: [
+                    {
+                      availableQuantity: 6,
+                      locationId: "gid://shopify/Location/81699209507",
+                    },
+                  ],
+                  
                 },
+                {
+                  title:"Variant2",
+                  sku:"fjife345",
+                  price: "200",
+                  options: [
+                    "Red","XL"
+                  ],
+                  "inventoryItem": {
+                    "tracked": true
+                  },
+                  inventoryQuantities: [
+                    {
+                      availableQuantity: 3,
+                      locationId: "gid://shopify/Location/81699209507",
+                    },
+                  ],
+                }
               ],
             },
           },
